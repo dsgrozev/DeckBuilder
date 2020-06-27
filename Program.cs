@@ -67,32 +67,27 @@ namespace DeckBuilder
                 candidate.coef = Calculate(candidate.card, classPairs, deck, isHighlander);
                 candidates.Add(candidate);
             }
-            if (candidates.Count == 0)
+            candidates.Sort();
+            if (candidates.Count == 0 || candidates[0].coef < 0)
             {
                 classPairs.Sort();
                 AddCard(classPairs[0].Card1, deck, ref isHighlander);
                 AddCard(classPairs[0].Card2, deck, ref isHighlander);
                 return;
             }
-            candidates.Sort();
             AddCard(candidates[0].card, deck, ref isHighlander);
         }
 
         private static double Calculate(string card, List<CardPair> classPairs, List<string> deck, bool isHighlander)
         {
             List<CardPair> interestingPairs = classPairs.FindAll(x => x.Card1 == card || x.Card2 == card);
-            int count = 2;
-            if (deck.Count == 29 || isHighlander || Cards.FindByNameCollectible(card).rarity == "LEGENDARY")
-            {
-                count = 1;
-            }
             double ret = 0.0;
             foreach(string deckCard in deck)
             {
                 CardPair pair = interestingPairs.Find(x => x.Card1 == deckCard || x.Card2 == deckCard);
                 if (pair != null)
                 {
-                    ret += pair.DeckWinPercentage() * count;
+                    ret += pair.DeckWinPercentage() - .5;
                 }
             }
             return ret;
