@@ -71,8 +71,14 @@ namespace DeckBuilder
             if (candidates.Count == 0 || candidates[0].coef < 0)
             {
                 classPairs.Sort();
-                AddCard(classPairs[0].Card1, deck, ref isHighlander);
-                AddCard(classPairs[0].Card2, deck, ref isHighlander);
+                int i = 0;
+                bool added = false;
+                while (!added)
+                {
+                    added = AddCard(classPairs[i].Card1, deck, ref isHighlander) ||
+                            AddCard(classPairs[i].Card2, deck, ref isHighlander);
+                    i++;
+                }
                 return;
             }
             AddCard(candidates[0].card, deck, ref isHighlander);
@@ -104,16 +110,16 @@ namespace DeckBuilder
             }
         }
 
-        private static void AddCard(string card, List<string> deck, ref bool isHighlander)
+        private static bool AddCard(string card, List<string> deck, ref bool isHighlander)
         {
             if (deck.Contains(card))
             {
-                return;
+                return false;
             }
             if (isHighlander)
             {
                 deck.Add(card);
-                return;
+                return true;
             }
             Card realCard = Cards.FindByNameCollectible(card);
             if (realCard.text != null && realCard.text.Contains("no duplicates"))
@@ -121,15 +127,16 @@ namespace DeckBuilder
                 isHighlander = true;
                 RemoveDuplicates(deck);
                 deck.Add(card);
-                return;
+                return true;
             }
             if (realCard.rarity == "LEGENDARY" || deck.Count() == 29)
             {
                 deck.Add(card);
-                return;
+                return true;
             }
             deck.Add(card);
             deck.Add(card);
+            return true;
         }
 
         private static void RemoveDuplicates(List<string> deck)
