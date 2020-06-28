@@ -30,22 +30,28 @@ namespace DeckBuilder
                 double topPercent = classPairs[0].DeckWinPercentage();
                 List<String> deck = new List<String>();
                 AddTopCards(classPairs, deck, minCount, topPercent, ref isHighlander);
-                while (deck.Count < 30)
+                while (deck.Count < 40)
                 {
                     AddNextCard(classPairs, deck, ref isHighlander);
                 }
-                SaveDeck(deck, hero);
+                SaveDeck(deck, hero.ToString() + "-" + topPercent + "-" + minCount);
             }
         }
 
-        private static void SaveDeck(List<string> deck, HeroClass hero)
+        private static void SaveDeck(List<string> deck, String hero)
         {
             StringBuilder sb = new StringBuilder();
+            int i = 0;
             foreach(string card in deck)
             {
+                if (i == 30)
+                {
+                    sb.AppendLine("--------");
+                }
                 sb.AppendLine(card);
+                i++;
             }
-            string saveFile = Path.GetDirectoryName(CardPair.saveFile) + "\\" + hero.ToString() + ".txt";
+            string saveFile = Path.GetDirectoryName(CardPair.saveFile) + "\\" + hero + ".txt";
             File.WriteAllText(saveFile, sb.ToString().Trim());
         }
 
@@ -129,7 +135,7 @@ namespace DeckBuilder
                 deck.Add(card);
                 return true;
             }
-            if (realCard.rarity == "LEGENDARY" || deck.Count() == 29)
+            if (realCard.rarity == "LEGENDARY" || deck.Count() == 39)
             {
                 deck.Add(card);
                 return true;
