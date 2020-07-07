@@ -8,7 +8,6 @@ namespace DeckBuilder
 {
     using PairReader;
     using System.IO;
-    using System.Runtime.InteropServices;
 
     class Program
     {
@@ -34,24 +33,75 @@ namespace DeckBuilder
                 {
                     AddNextCard(classPairs, deck, ref isHighlander);
                 }
-                SaveDeck(deck, hero.ToString() + "-" + topPercent + "-" + minCount);
+                SaveDeck(deck, hero.ToString(), classPairs);
+            }
+            UpdateDeck();
+        }
+
+        private static void UpdateDeck()
+        {
+            string[] lines = File.ReadAllLines(Path.GetDirectoryName(CardPair.saveFile) + "\\deck.txt");
+            HeroClass hero = (HeroClass)Enum.Parse(typeof(HeroClass), lines[1].Split(':')[1].Trim().ToUpper());
+            int i = 5;
+            List<String> deck = new List<string>();
+            while(deck.Count < 30)
+            {
+                AddCard(deck, lines[i++]);
+            }
+            List<CardPair> classPairs = CardPair.CardPairs.FindAll(x => x.Hero == hero);
+            classPairs.Sort();
+            int minCount = classPairs[0].Count();
+            classPairs.RemoveAll(x => x.Count() < minCount);
+            foreach (CardPair pair in classPairs)
+            {
+                if (deck.Contains(pair.Card1))
+                {
+                    RankedCard.AddCard(pair.Card2, pair.DeckWinPercentage());
+                }
+                if (deck.Contains(pair.Card2))
+                {
+                    RankedCard.AddCard(pair.Card1, pair.DeckWinPercentage());
+                }
+            }
+            RankedCard.Save();
+        }
+
+        private static void AddCard(List<String> deck, string line)
+        {
+            int count = int.Parse(line.Split('x')[0].Last().ToString());
+            string name = line.Split(')')[1].Trim();
+            deck.Add(name);
+            if (count == 2)
+            {
+                deck.Add(name);
             }
         }
 
-        private static void SaveDeck(List<string> deck, String hero)
+        private static void SaveDeck(List<string> deck, String hero, List<CardPair> cardPairs)
         {
             StringBuilder sb = new StringBuilder();
             int i = 0;
+            double deckScore = 0;
             foreach(string card in deck)
             {
                 if (i == 30)
                 {
                     sb.AppendLine("--------");
                 }
-                sb.AppendLine(card);
+                double cardScore = Calculate(card, cardPairs, deck);
+                if (i < 31)
+                {
+                    deckScore += cardScore;
+                }
+                sb.AppendLine(card + ", " + cardScore);
                 i++;
             }
-            string saveFile = Path.GetDirectoryName(CardPair.saveFile) + "\\" + hero + ".txt";
+            string saveFile = Path.GetDirectoryName(CardPair.saveFile) + 
+                "\\" +
+                hero +
+                "_" +
+                string.Format("{0:0.00}", deckScore) +
+                ".txt";
             File.WriteAllText(saveFile, sb.ToString().Trim());
         }
 
@@ -70,7 +120,7 @@ namespace DeckBuilder
                 {
                     candidate.card = pair.Card2;
                 }
-                candidate.coef = Calculate(candidate.card, classPairs, deck, isHighlander);
+                candidate.coef = Calculate(candidate.card, classPairs, deck);
                 candidates.Add(candidate);
             }
             candidates.Sort();
@@ -90,16 +140,21 @@ namespace DeckBuilder
             AddCard(candidates[0].card, deck, ref isHighlander);
         }
 
-        private static double Calculate(string card, List<CardPair> classPairs, List<string> deck, bool isHighlander)
+        private static double Calculate(string card, List<CardPair> classPairs, List<string> deck)
         {
             List<CardPair> interestingPairs = classPairs.FindAll(x => x.Card1 == card || x.Card2 == card);
             double ret = 0.0;
-            foreach(string deckCard in deck)
+            int i = 0;
+            foreach (string deckCard in deck)
             {
                 CardPair pair = interestingPairs.Find(x => x.Card1 == deckCard || x.Card2 == deckCard);
                 if (pair != null)
                 {
                     ret += pair.DeckWinPercentage() - .5;
+                }
+                if (++i == 31)
+                {
+                    break;
                 }
             }
             return ret;
