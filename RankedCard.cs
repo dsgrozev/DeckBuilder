@@ -34,19 +34,21 @@ namespace DeckBuilder
             this.rank = rank;
         }
 
-        string name;
+        internal readonly string name;
         double rank;
 
-        internal static void Save()
+        internal static void Save(string filename = "")
         {
             rankedCards.Sort();
+            double score = 0;
             StringBuilder sb = new StringBuilder();
             foreach(RankedCard card in rankedCards)
             {
                 sb.AppendLine(card.name + ": " + card.rank);
+                score += card.rank;
             }
             string saveFile = Path.GetDirectoryName(CardPair.saveFile) +
-                "\\updatedDeck.txt";
+                "\\" + filename + "_" + score.ToString() + ".txt";
             File.WriteAllText(saveFile, sb.ToString().Trim());
         }
     }

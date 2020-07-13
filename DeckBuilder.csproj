@@ -47,6 +47,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Candidate.cs" />
+    <Compile Include="Deck.cs" />
+    <Compile Include="IDeckRestriction.cs" />
+    <Compile Include="NoNeutralsRestriction.cs" />
+    <Compile Include="NoMinionsRestriction.cs" />
+    <Compile Include="NoDuplicatesRestriction.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RankedCard.cs" />
