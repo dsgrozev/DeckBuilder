@@ -104,9 +104,9 @@ namespace DeckBuilder
             }
             string saveFile = Path.GetDirectoryName(CardPair.saveFile) +
                 "\\" +
-                hero +
+                string.Format("{0:0.00}", deckScore) + 
                 "_" +
-                string.Format("{0:0.00}", deckScore) +
+                hero +
                 ".txt";
             File.WriteAllText(saveFile, sb.ToString().Trim());
         }
