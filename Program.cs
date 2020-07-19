@@ -22,7 +22,7 @@ namespace DeckBuilder
                 List<CardPair> classPairs = CardPair.CardPairs.FindAll(x => x.Hero == hero);
                 classPairs.Sort();
                 int minCount = classPairs[0].Count();
-                classPairs.RemoveAll(x => x.Count() < minCount);
+                //classPairs.RemoveAll(x => x.Count() < minCount);
                 RankedCard.rankedCards.Clear();
                 foreach (CardPair pair in classPairs)
                 {
@@ -63,22 +63,26 @@ namespace DeckBuilder
                         }
                     }
                     oneMoreDeck = false;
+                    string restrictions = "";
                     if (deck.ndr.IsDeckRestricted(deck.cards))
                     {
                         allowNDR = false;
                         oneMoreDeck = true;
+                        restrictions += "_NDR";
                     }
                     if (deck.nmr.IsDeckRestricted(deck.cards))
                     {
                         allowNMR = false;
                         oneMoreDeck = true;
+                        restrictions += "_NMR";
                     }
                     if (deck.nnr.IsDeckRestricted(deck.cards))
                     {
                         allowNNR = false;
                         oneMoreDeck = true;
+                        restrictions += "_NNR";
                     }
-                    SaveDeck(deck.cards, hero.ToString(), classPairs);
+                    SaveDeck(deck.cards, hero.ToString() + restrictions, classPairs);
                 }
             }
         }

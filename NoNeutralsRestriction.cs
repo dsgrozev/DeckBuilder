@@ -35,7 +35,7 @@ namespace DeckBuilder
 
         public bool IsCardRestricted(string card, List<string> deck)
         {
-            return PairReader.Cards.FindByName(card).cardClass != "NEUTRAL";
+            return PairReader.Cards.FindByName(card).cardClass == "NEUTRAL";
         }
 
         public NoNeutralsRestriction()

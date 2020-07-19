@@ -35,7 +35,7 @@ namespace DeckBuilder
 
         public bool IsCardRestricted(string card, List<string> deck)
         {
-            return PairReader.Cards.FindByName(card).type != "MINION";
+            return PairReader.Cards.FindByName(card).type == "MINION";
         }
 
         public NoMinionsRestriction()
