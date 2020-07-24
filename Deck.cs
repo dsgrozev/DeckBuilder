@@ -30,7 +30,7 @@ namespace DeckBuilder
             }
             if (cardCount == 1)
             {
-                if (!(Cards.FindByNameCollectible(card).rarity == "LEGENDARY") && !ndr.IsDeckRestricted(cards))
+                if (!(Cards.FindByNameNotHeroCollectible(card).rarity == "LEGENDARY") && !ndr.IsDeckRestricted(cards))
                 {
                     cards.Add(card);
                     return true;
