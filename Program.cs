@@ -97,7 +97,7 @@ namespace DeckBuilder
                 {
                     full = "_FULL";
                 }
-                SaveDeck(deck.cards, hero.ToString() + full + restrictions, classPairs);
+                SaveDeck(deck.cards, hero.ToString() + full + "_" + deck.cards[0] + restrictions, classPairs);
             }
         }
 
